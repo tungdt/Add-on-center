@@ -1,3 +1,11 @@
+<!--Addon navigation-->
+<div class="addonSearchToolbar">
+  <div class="uiGrayLightBox">
+    <div class="clearfix"><button class="btn btn-primary pull-left" onclick="location.href='/portal/intranet/add-ons'" type="button">Back to Add-ons</button></div>
+  </div>
+</div>
+<!--END Addon navigation-->
+
 <div class="UIAddOnPortlet" id="$uicomponent.id">
 
 	<%

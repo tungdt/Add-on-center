@@ -254,9 +254,8 @@ public class UIAddOnSearchResult extends UIContainer {
     }
     // execute query and fetch result
     QueryResult result = query.execute();
-
     return result;
-
+      
   }
 
   private void getDBResource(String sqlQuery) throws Exception {

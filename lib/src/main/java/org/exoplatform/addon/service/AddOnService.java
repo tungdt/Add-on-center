@@ -98,7 +98,7 @@ public class AddOnService {
 	}	
 	public static String getImageCover(Node node) throws PathNotFoundException, RepositoryException{
 		
-		String path ="/sites/intranet/medias/images/addons-icon.jpg";
+		String path ="/add-on-center-webapp/skin/css/images/addons-icon.jpg";
 		if(node != null){
 			Node mediaNode = node.getNode("medias/images");			   			   
 			if(mediaNode != null){
@@ -106,13 +106,13 @@ public class AddOnService {
 				NodeIterator iterator = mediaNode.getNodes();	
 				if (iterator.getSize() > 0) {
 					Node firstNode= iterator.nextNode();
-					path = firstNode.getPath();
+					path = "/rest/jcr/repository/collaboration" + firstNode.getPath();
 				}
 				
 			}
 			
 		}
-		return "/rest/jcr/repository/collaboration" + path;
+		return path;
 		
 	}
 	public static List<String> getImagesNode(Node node) throws Exception, RepositoryException{
