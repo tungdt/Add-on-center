@@ -158,9 +158,10 @@ public class UIAddOnSearchResult extends UIContainer {
 
   private void resetChild() throws RepositoryException {
     if (this.getData().size() > 0) {
-      for (Node aNode : this.getData()) {
+      this.removeChild(UIAddOnSearchOne.class);
+     /* for (Node aNode : this.getData()) {
         this.removeChildById(aNode.getUUID());
-      }
+      }*/
     }
 
   }
