@@ -24,13 +24,18 @@
 		
 		<%  	
 			List children = formInput.getChildren() ;
-			
+			def imageCount = 1;
 			for(component in children) {
 			
 			if(component.isRendered() ){
 				
 				def fieldName = component.getName(); 
-				def label = _ctx.appRes("UIAddOnSearchPortlet.UIExtensionForm." + fieldName); 
+        def label = _ctx.appRes("UIAddOnSearchPortlet.UIExtensionForm." + fieldName); 
+        if ( fieldName.startsWith("img")){
+					 label= _ctx.appRes('UIAddOnSearchPortlet.UIExtensionForm.img_0') + " " + imageCount;
+           imageCount++;
+        }
+ 
 				def txtVal = uicomponent.getInputValue(fieldName);								
 			
 		%>	

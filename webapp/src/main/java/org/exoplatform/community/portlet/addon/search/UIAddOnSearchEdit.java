@@ -33,30 +33,26 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
-
 import javax.jcr.lock.LockException;
 import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.version.VersionException;
-import org.exoplatform.addon.service.AddOnService;
 
+import org.exoplatform.addon.service.AddOnService;
+import org.exoplatform.community.portlet.addon.UIAddOnForm;
 import org.exoplatform.community.portlet.addon.UIAddOnWizard;
 import org.exoplatform.container.ExoContainerContext;
-
 import org.exoplatform.portal.webui.util.Util;
-
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.exoplatform.services.wcm.publication.PublicationDefaultStates;
 import org.exoplatform.services.wcm.publication.WCMPublicationService;
-
 import org.exoplatform.upload.UploadResource;
 import org.exoplatform.upload.UploadService;
 import org.exoplatform.web.application.ApplicationMessage;
 import org.exoplatform.webui.application.WebuiRequestContext;
 import org.exoplatform.webui.config.annotation.ComponentConfig;
 import org.exoplatform.webui.config.annotation.EventConfig;
-
 import org.exoplatform.webui.core.UIApplication;
 import org.exoplatform.webui.core.UIComponent;
 import org.exoplatform.webui.core.UIPopupComponent;
@@ -221,7 +217,7 @@ public class UIAddOnSearchEdit extends UIForm implements UIPopupComponent {
     }
   }
 
-  public void addImageNode(UIUploadInput child) throws FileNotFoundException,
+  public boolean addImageNode(UIUploadInput child, Event<UIAddOnSearchEdit> event) throws FileNotFoundException,
                                                ItemExistsException,
                                                PathNotFoundException,
                                                NoSuchNodeTypeException,
@@ -237,14 +233,25 @@ public class UIAddOnSearchEdit extends UIForm implements UIPopupComponent {
     if (uploadResource.length > 0) {
 
       String imgFileName = uploadResource[0].getFileName();
+      imgFileName = imgFileName.replaceAll("[^a-zA-Z0-9.-]", "-");
       String imgMineType = uploadResource[0].getMimeType();
+      if(imgMineType.substring(0,imgMineType.lastIndexOf("/")).equals("image") == false){
+        UIApplication uiApp = this.getAncestorOfType(UIApplication.class);
+        UIAddOnSearchEdit uiAddOnSearchEdit = event.getSource();
+        uiApp.addMessage(new ApplicationMessage("UIAddOnSearchPortlet.msg.invalidImage",
+                                                null,
+                                                ApplicationMessage.WARNING));
+        event.getRequestContext().addUIComponentToUpdateByAjax(uiAddOnSearchEdit);
+        return false;
+      }
       Node imageNode = this.getNode().addNode("medias/images/" + imgFileName, "nt:file");
       Node imageContent = imageNode.addNode("jcr:content", "nt:resource");
       imageContent.setProperty("jcr:data", inputStreams[0]);
       imageContent.setProperty("jcr:mimeType", imgMineType);
       imageContent.setProperty("jcr:lastModified", Calendar.getInstance());
-    }
 
+    }
+    return true;
   }
 
   public static class CancelActionListener extends EventListener<UIAddOnSearchEdit> {
@@ -400,7 +407,8 @@ public class UIAddOnSearchEdit extends UIForm implements UIPopupComponent {
       for (UIComponent child : listChildren) {
 
         if (child instanceof UIUploadInput) {
-          uiAddOnSearchEdit.addImageNode((UIUploadInput) child);
+          boolean canUpload = uiAddOnSearchEdit.addImageNode((UIUploadInput) child, event);
+          if(canUpload==false) return;
         }
       }
 

@@ -22,7 +22,7 @@
 		
 				<%  	
 					List children = formInput.getChildren() ;
-			
+			    def imageCount = 1;
 					for(component in children) {
 
 						if(component.isRendered()){
@@ -46,10 +46,11 @@
 					
 								def label = _ctx.appRes("UIAddOnPortlet.UIExtensionForm." + fieldName); 
 					
-								if (label.equals("img0")) label = "Upload Screenshots";
-					
-								if ( label.startsWith("img"))
-								label= label.replace("img",  _ctx.appRes('UIAddOnPortlet.UIExtensionForm.img'));
+								
+								if ( fieldName.startsWith("img")){
+								 label= _ctx.appRes('UIAddOnPortlet.UIExtensionForm.img_0') + " " + imageCount;
+                 imageCount++;
+                }
 							%> 
 				
 							$label 

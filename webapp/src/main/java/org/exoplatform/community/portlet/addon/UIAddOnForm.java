@@ -29,6 +29,7 @@ import java.util.Map;
 
 import javax.jcr.Node;
 
+import org.exoplatform.community.portlet.addon.search.UIAddOnSearchEdit;
 import org.exoplatform.community.portlet.addon.search.UIAddOnSearchForm;
 import org.exoplatform.community.portlet.addon.search.UIAddOnSearchResult;
 import org.exoplatform.container.ExoContainerContext;
@@ -155,6 +156,27 @@ public class UIAddOnForm extends UIForm {
         event.getRequestContext().addUIComponentToUpdateByAjax(uiAddOnForm);
         return;
       }
+      
+      //validate screenshot images
+      List<UIComponent> listChildren = new ArrayList<UIComponent>();
+      listChildren = uiAddOnWizard.getChildren();
+      for (UIComponent child : listChildren) {
+        if (child instanceof UIUploadInput) {
+          child = (UIUploadInput) child;
+          UploadResource[] uploadResource = ((UIUploadInput) child).getUploadResources();
+          inputStreams = ((UIUploadInput) child).getUploadDataAsStreams();
+          if (uploadResource.length > 0) {
+            String imgMineType = uploadResource[0].getMimeType();
+            if(imgMineType.substring(0,imgMineType.lastIndexOf("/")).equals("image") == false){
+              uiApp.addMessage(new ApplicationMessage("UIAddOnPortlet.msg.invalidImage",
+                                                      null,
+                                                      ApplicationMessage.WARNING));
+              event.getRequestContext().addUIComponentToUpdateByAjax(uiAddOnForm);
+              return;
+            }
+          }
+        }
+      }
 
       String nameAddon = titleAddon.replaceAll(" ", "-").toLowerCase();
       try {
@@ -163,8 +185,6 @@ public class UIAddOnForm extends UIForm {
         log.error(e.getMessage());
       }
 
-      List<UIComponent> listChildren = new ArrayList<UIComponent>();
-      listChildren = uiAddOnWizard.getChildren();
       for (UIComponent child : listChildren) {
 
         if (child instanceof UIUploadInput) {
@@ -179,6 +199,7 @@ public class UIAddOnForm extends UIForm {
           }
           if (uploadResource.length > 0) {
             String imgFileName = uploadResource[0].getFileName();
+            imgFileName = imgFileName.replaceAll("[^a-zA-Z0-9.-]", "-");
             String imgMineType = uploadResource[0].getMimeType();
 
             Node imageNode = currentNode.addNode("medias/images/" + imgFileName, "nt:file");

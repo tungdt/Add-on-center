@@ -46,6 +46,7 @@
 			<save-successful>Your add-on has been successfully submited. An eXoer will contact you soon before publication.</save-successful>
 			<save-unsuccessful>There is problem when saving your resource</save-unsuccessful>
 			<invalid>Please fill the mandatory fields!</invalid>
+			<invalidImage>Please upload image files only!</invalidImage>
 			<invalidemail>The email field is not correct!</invalidemail>
 			<malformurl>The download url is not correct!</malformurl>
 		</msg>

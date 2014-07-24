@@ -32,6 +32,7 @@
 	</UIPopupWindow>
       <UIAddOnPortlet> 
        <UIExtensionForm>
+          <title>Title</title>
           <email>Contact Email</email>
           <author>Author</author>
           <addOnName>Add-on Name</addOnName>
@@ -51,6 +52,7 @@
 			<save-unsuccessful>There is problem when saving your resource</save-unsuccessful>
 			<invalid>Please fill the mandatory fields!</invalid>
 			<invalidemail>The email field is not correct!</invalidemail>
+			<invalidImage>Please upload image files only!</invalidImage>
 			<malformurl>The download url is not correct!</malformurl>
 		</msg>
 		<label>

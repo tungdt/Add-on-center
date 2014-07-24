@@ -123,12 +123,10 @@ public class UIAddOnWizard extends UIFormInputSet{
 	}
 	
 	public void initVals(Node aNode){
-
-		String addon_Node = Util.getPortalRequestContext().getRequestParameter("addon_node");
 		if(null != aNode){
 			String propertyName = null;
 			String txt = null;
-			String[] properties= {ADDON_TITLE,ADDON_DESCRIPTION,ADDON_DOWNLOAD_URL,ADDON_DOCUMENT_URL,ADDON_SOURCE_URL,ADDON_COMPABILITY,ADDON_LICENSE,ADDON_VERSION};
+			String[] properties= {ADDON_TITLE,ADDON_DESCRIPTION,ADDON_DOWNLOAD_URL,ADDON_DOCUMENT_URL,ADDON_SOURCE_URL,ADDON_COMPABILITY,ADDON_LICENSE,ADDON_VERSION,ADDON_EMAIL};
 			for(int i =0; i < properties.length; i++)
 		    {
 				propertyName = properties[i];
