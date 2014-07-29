@@ -40,6 +40,8 @@ import org.exoplatform.container.xml.PortalContainerInfo;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.cms.CmsService;
 import org.exoplatform.services.cms.JcrInputProperty;
+import org.exoplatform.services.jcr.access.PermissionType;
+import org.exoplatform.services.jcr.core.ExtendedNode;
 import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -290,7 +292,7 @@ public class AddOnService {
 		try {
 			nodePath = cmsService.storeNode(nodeType, homeNode,inputProperties, isNew);
 		} catch (Exception e) {
-			log.error(e.getMessage());
+		  log.debug("Exceptions happen while storing data",e);
 		}
 		String[] temp = nodePath.split("/");
 		String currentNodeName = temp[temp.length - 1];
@@ -365,6 +367,12 @@ public class AddOnService {
 			Session session = dummyNode.getSession();
 			Node cmNode = dummyNode.addNode(preference_item_path,"nt:unstructured");
 			cmNode.setProperty("exo:title", folderName);
+			cmNode.addMixin("exo:privilegeable");
+      Map<String, String[]> permissions = new HashMap<String, String[]>();
+      permissions.put("*:/platform/administrators", PermissionType.ALL);
+      permissions.put("*:/platform/users", new String[]{PermissionType.READ,PermissionType.ADD_NODE,PermissionType.SET_PROPERTY});
+      ((ExtendedNode)cmNode).setPermissions(permissions);
+      
 			session.save();
 			return cmNode;
 		} else {
@@ -375,7 +383,7 @@ public class AddOnService {
 	/**
 	 * 
 	 */
-	public static void sendRequestReceiveMail(String receiver, String fromEmail)
+	public static void sendRequestReceiveMail(String receiver, String fromEmail, String hostName)
 			throws Exception {
 
 		MailService mailService = WCMCoreUtils.getService(MailService.class);
@@ -387,7 +395,7 @@ public class AddOnService {
 		String bodyMessage = "<br> Thank you for submitting your add-on." + "<br>"
 				             + "<br>"
 		                     +  "=========================" + "<br>"
-		     				 + "http://community.exoplatform.com";
+		     				 + hostName;
 		
 		message.setBody(bodyMessage);
 		message.setMimeType("text/html");
@@ -397,7 +405,7 @@ public class AddOnService {
 	}
 	
 	public static void sendNewAddonSubmisson(String receiver, String fromEmail, String subject,
-			                                 String email,  String titleAddon, String description, String version,String license, String author, String compatibility,String  sourceUrl, String documentUrl ,String downloadUrl , Boolean hosted)
+			                                 String email,  String titleAddon, String description, String version,String license, String author, String compatibility,String  sourceUrl, String documentUrl ,String downloadUrl , Boolean hosted, String hostName)
 			throws Exception {
 
 		MailService mailService = WCMCoreUtils.getService(MailService.class);
@@ -417,7 +425,7 @@ public class AddOnService {
 		String _documentUrl= documentUrl!= null ? "Documentation: " +  documentUrl : "Documentation: ";
 		String _downloadUrl= downloadUrl!= null ? "Download: " +  downloadUrl : "Download: ";
 		String _hosted= hosted ? "I wish my add-on to be hosted on the eXo Add-on repository on Github: Yes" : "I wish my add-on to be hosted on the eXo Add-on repository on Github: No";
-		String bodyMessage = "The following add-on is submitted on community.exoplatform.com:" + "<br><br>"
+		String bodyMessage = "The following add-on is submitted on " + hostName + "<br><br>"
 				
 				+ "Add-on Name: " + titleAddon + "<br><br>"
 				+ "Description: " + description + "<br><br>"
@@ -432,7 +440,7 @@ public class AddOnService {
 				+ "Email (for internal use only): " + email + "<br><br>"
 				+ "Please login to the website back-end to validate or refuse the add-on. (go to \"Web contents\" folder > \"Contributions\" folder, add categories and publish. " + "<br><br>"
 			    + "=========================" + "<br>"
-				+ "http://community.exoplatform.com";
+				+ hostName;
 		
 		message.setBody(bodyMessage);
 		message.setMimeType("text/html");
@@ -441,7 +449,7 @@ public class AddOnService {
 
 	}
 	
-	public static void SendConfirmationAddonPublishedEmail(String receiver,String nodeName) throws Exception{
+	public static void SendConfirmationAddonPublishedEmail(String receiver,String nodeName, String hostName) throws Exception{
 		
 		String fromEmail = Utils.getPortletPreference(PREFERENCE_FROM);
 		String fromName = Utils.getPortletPreference(PREFERENCE_FROM_NAME);
@@ -451,16 +459,16 @@ public class AddOnService {
 	    
 		MailService mailService = WCMCoreUtils.getService(MailService.class);
 		Message message = new Message();
-		String link = "http://community.exoplatform.com/portal/intranet/addon-detail?content-id=/repository/collaboration/sites/intranet/web contents/Contributions/" + nodeName;
+		String link = hostName + "/portal/intranet/addon-detail?content-id=/repository/collaboration/sites/intranet/web contents/Contributions/" + nodeName;
 		message.setTo(receiver);
 		message.setFrom(fromName + "<" +fromEmail + ">");
 		String bodymess = "Thank your for contributing to the eXo Add-ons, your add-on has been validated and published." + "<br>"
 				          +   "Please access you add-on here: " + "<a href='link' >" + link + "</a>" +  "<br><br>"
 				          +   "=========================" + "<br>"
-		     			    + "http://community.exoplatform.com";
+		     			    + hostName;
 		message.setBody(bodymess);
 		message.setMimeType("text/html");
-		message.setSubject("Your Add-on has been validated and published on community.exoplatform.com");
+		message.setSubject("Your Add-on has been validated and published on " + hostName);
 
 
 		mailService.sendMessage(message);

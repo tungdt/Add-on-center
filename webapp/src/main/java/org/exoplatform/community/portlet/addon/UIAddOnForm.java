@@ -28,11 +28,14 @@ import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Node;
+import javax.portlet.PortletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import org.exoplatform.community.portlet.addon.search.UIAddOnSearchEdit;
 import org.exoplatform.community.portlet.addon.search.UIAddOnSearchForm;
 import org.exoplatform.community.portlet.addon.search.UIAddOnSearchResult;
 import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.portal.application.PortalRequestContext;
 import org.exoplatform.portal.webui.util.Util;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
@@ -182,7 +185,7 @@ public class UIAddOnForm extends UIForm {
       try {
         currentNode = AddOnService.storeNode(titleAddon, nameAddon, hosted, mapProperties, true);
       } catch (Exception e) {
-        log.error(e.getMessage());
+        log.debug("Exceptions happen while storing data",e);
       }
 
       for (UIComponent child : listChildren) {
@@ -250,10 +253,14 @@ public class UIAddOnForm extends UIForm {
          * TODO send notification of submission addon to eXo marketing and to
          * the person who submit the add-on
          */
-        // AddOnUtil.sendRequestReceiveMail(email,
-        // Utils.getPortletPreference(UIAddOnPortlet.PREFERENCE_FROM) );
-        // AddOnUtil.SendConfirmationAddonPublishedEmail(email, nameAddon);
-
+         //AddOnService.sendRequestReceiveMail(email,
+         //Utils.getPortletPreference(UIAddOnPortlet.PREFERENCE_FROM) );
+         //AddOnService.SendConfirmationAddonPublishedEmail(email, nameAddon);
+   
+        PortalRequestContext portalRequestContext = Util.getPortalRequestContext();
+        HttpServletRequest httpServletRequest= portalRequestContext.getRequest();
+        String hostName = httpServletRequest.getScheme() + "://" + httpServletRequest.getServerName() + ":" + httpServletRequest.getServerPort();
+        
         AddOnService.sendNewAddonSubmisson(Utils.getPortletPreference(UIAddOnPortlet.PREFERENCE_RECEIVER),
                                         Utils.getPortletPreference(UIAddOnPortlet.PREFERENCE_FROM),
                                         Utils.getPortletPreference(UIAddOnPortlet.PREFERENCE_EMAIL_SUBJECT),
@@ -267,7 +274,7 @@ public class UIAddOnForm extends UIForm {
                                         sourceUrl,
                                         documentUrl,
                                         downloadUrl,
-                                        hosted);
+                                        hosted,hostName);
 
       } catch (Exception e) {
         log.error(e.getMessage());

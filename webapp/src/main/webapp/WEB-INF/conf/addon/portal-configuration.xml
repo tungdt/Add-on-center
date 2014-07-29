@@ -34,7 +34,7 @@
             <field name="templateLocation">
               <string>war:/conf/addon/</string>
             </field>
-            <field name="importMode"><string>merge</string></field>
+            <field name="importMode"><string>insert</string></field>
           </object>
         </object-param>
 

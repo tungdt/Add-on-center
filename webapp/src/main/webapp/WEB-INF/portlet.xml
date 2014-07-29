@@ -47,7 +47,7 @@
     <portlet-preferences>
             <preference>
                 <name>adminEmail</name>
-                <value>namph@exoplatform.com</value>
+                <value>addon-center@exoplatform.com</value>
                 <read-only>false</read-only>
             </preference>
             <preference>
